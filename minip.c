@@ -6,8 +6,8 @@
 #include <windows.h>
 #endif
 
-#define HEIGHT 20
-#define WIDTH 50
+#define HEIGHT 100
+#define WIDTH 100
 #define MAX_SHAPES 100
 
 typedef enum {
@@ -116,9 +116,9 @@ void draw_rectangle(int x1, int y1, int w, int h, int fill) {
 void draw_triangle(int x1, int y1, int x2, int y2, int x3, int y3, int fill) {
     if (fill) {
         // Sort vertices by y-coordinate (y1 <= y2 <= y3)
-        if (y1 > y2) { int t; t = x1; x1 = x2; x2 = t; t = y1; y1 = y2; y2 = t; }
-        if (y1 > y3) { int t; t = x1; x1 = x3; x3 = t; t = y1; y1 = y3; y3 = t; }
-        if (y2 > y3) { int t; t = x2; x2 = x3; x3 = t; t = y2; y2 = y3; y3 = t; }
+        if (y1 > y2) { int tx = x1, ty = y1; x1 = x2; y1 = y2; x2 = tx; y2 = ty; }
+        if (y1 > y3) { int tx = x1, ty = y1; x1 = x3; y1 = y3; x3 = tx; y3 = ty; }
+        if (y2 > y3) { int tx = x2, ty = y2; x2 = x3; y2 = y3; x3 = tx; y3 = ty; }
 
         if (y3 == y1) return; // Degenerate flat triangle
 
@@ -132,8 +132,8 @@ void draw_triangle(int x1, int y1, int x2, int y2, int x3, int y3, int fill) {
             float alpha = (float)i / total_height;
             float beta  = (float)(curr_y - (second_half ? y2 : y1)) / segment_height;
 
-            int ax = x1 + (x3 - x1) * alpha;
-            int bx = second_half ? (x2 + (x3 - x2) * beta) : (x1 + (x2 - x1) * beta);
+            int ax = x1 + (int)((x3 - x1) * alpha);
+            int bx = second_half ? (x2 + (int)((x3 - x2) * beta)) : (x1 + (int)((x2 - x1) * beta));
 
             if (ax > bx) { int t = ax; ax = bx; bx = t; }
             for (int x = ax; x <= bx; x++) {
@@ -253,7 +253,7 @@ void displaycanvas() {
 
     // X indices
     printf("    ");
-    for (int j = 0; j < WIDTH; j += 2) {
+    for (int j = 0; j < WIDTH; j += 10) {
         if (j % 10 == 0) {
             printf("%02d  ", j);
         } else {
@@ -307,36 +307,36 @@ void add_shape_menu() {
     if (type_choice == 1) {
         new_shape.type = LINE;
         printf("\nEntering Line parameters:\n");
-        new_shape.x1 = read_int("Enter x1 (0-49): ", 0, WIDTH - 1);
-        new_shape.y1 = read_int("Enter y1 (0-19): ", 0, HEIGHT - 1);
-        new_shape.x2 = read_int("Enter x2 (0-49): ", 0, WIDTH - 1);
-        new_shape.y2 = read_int("Enter y2 (0-19): ", 0, HEIGHT - 1);
+        new_shape.x1 = read_int("Enter x1 (0-99): ", 0, WIDTH - 1);
+        new_shape.y1 = read_int("Enter y1 (0-99): ", 0, HEIGHT - 1);
+        new_shape.x2 = read_int("Enter x2 (0-99): ", 0, WIDTH - 1);
+        new_shape.y2 = read_int("Enter y2 (0-99): ", 0, HEIGHT - 1);
     } else if (type_choice == 2) {
         new_shape.type = RECTANGLE;
         printf("\nEntering Rectangle parameters:\n");
-        new_shape.x1 = read_int("Enter top-left x (0-49): ", 0, WIDTH - 1);
-        new_shape.y1 = read_int("Enter top-left y (0-19): ", 0, HEIGHT - 1);
-        new_shape.width = read_int("Enter width (1-50): ", 1, WIDTH);
-        new_shape.height = read_int("Enter height (1-20): ", 1, HEIGHT);
+        new_shape.x1 = read_int("Enter top-left x (0-99): ", 0, WIDTH - 1);
+        new_shape.y1 = read_int("Enter top-left y (0-99): ", 0, HEIGHT - 1);
+        new_shape.width = read_int("Enter width (1-100): ", 1, WIDTH);
+        new_shape.height = read_int("Enter height (1-100): ", 1, HEIGHT);
         int fill_choice = read_int("Select style (1. Outline, 2. Filled): ", 1, 2);
         new_shape.fill = (fill_choice == 2);
     } else if (type_choice == 3) {
         new_shape.type = TRIANGLE;
         printf("\nEntering Triangle parameters:\n");
-        new_shape.x1 = read_int("Enter x1 (0-49): ", 0, WIDTH - 1);
-        new_shape.y1 = read_int("Enter y1 (0-19): ", 0, HEIGHT - 1);
-        new_shape.x2 = read_int("Enter x2 (0-49): ", 0, WIDTH - 1);
-        new_shape.y2 = read_int("Enter y2 (0-19): ", 0, HEIGHT - 1);
-        new_shape.x3 = read_int("Enter x3 (0-49): ", 0, WIDTH - 1);
-        new_shape.y3 = read_int("Enter y3 (0-19): ", 0, HEIGHT - 1);
+        new_shape.x1 = read_int("Enter x1 (0-99): ", 0, WIDTH - 1);
+        new_shape.y1 = read_int("Enter y1 (0-99): ", 0, HEIGHT - 1);
+        new_shape.x2 = read_int("Enter x2 (0-99): ", 0, WIDTH - 1);
+        new_shape.y2 = read_int("Enter y2 (0-99): ", 0, HEIGHT - 1);
+        new_shape.x3 = read_int("Enter x3 (0-99): ", 0, WIDTH - 1);
+        new_shape.y3 = read_int("Enter y3 (0-99): ", 0, HEIGHT - 1);
         int fill_choice = read_int("Select style (1. Outline, 2. Filled): ", 1, 2);
         new_shape.fill = (fill_choice == 2);
     } else if (type_choice == 4) {
         new_shape.type = CIRCLE;
         printf("\nEntering Circle parameters:\n");
-        new_shape.x1 = read_int("Enter center x (0-49): ", 0, WIDTH - 1);
-        new_shape.y1 = read_int("Enter center y (0-19): ", 0, HEIGHT - 1);
-        new_shape.radius = read_int("Enter radius (0-25): ", 0, 25);
+        new_shape.x1 = read_int("Enter center x (0-99): ", 0, WIDTH - 1);
+        new_shape.y1 = read_int("Enter center y (0-99): ", 0, HEIGHT - 1);
+        new_shape.radius = read_int("Enter radius (0-50): ", 0, 50);
         int fill_choice = read_int("Select style (1. Outline, 2. Filled): ", 1, 2);
         new_shape.fill = (fill_choice == 2);
     }
@@ -396,30 +396,30 @@ void modify_shape_menu() {
     print_shape(idx, history[idx]);
     
     if (history[idx].type == LINE) {
-        history[idx].x1 = read_int("Enter new x1 (0-49): ", 0, WIDTH - 1);
-        history[idx].y1 = read_int("Enter new y1 (0-19): ", 0, HEIGHT - 1);
-        history[idx].x2 = read_int("Enter new x2 (0-49): ", 0, WIDTH - 1);
-        history[idx].y2 = read_int("Enter new y2 (0-19): ", 0, HEIGHT - 1);
+        history[idx].x1 = read_int("Enter new x1 (0-99): ", 0, WIDTH - 1);
+        history[idx].y1 = read_int("Enter new y1 (0-99): ", 0, HEIGHT - 1);
+        history[idx].x2 = read_int("Enter new x2 (0-99): ", 0, WIDTH - 1);
+        history[idx].y2 = read_int("Enter new y2 (0-99): ", 0, HEIGHT - 1);
     } else if (history[idx].type == RECTANGLE) {
-        history[idx].x1 = read_int("Enter new top-left x (0-49): ", 0, WIDTH - 1);
-        history[idx].y1 = read_int("Enter new top-left y (0-19): ", 0, HEIGHT - 1);
-        history[idx].width = read_int("Enter new width (1-50): ", 1, WIDTH);
-        history[idx].height = read_int("Enter new height (1-20): ", 1, HEIGHT);
+        history[idx].x1 = read_int("Enter new top-left x (0-99): ", 0, WIDTH - 1);
+        history[idx].y1 = read_int("Enter new top-left y (0-99): ", 0, HEIGHT - 1);
+        history[idx].width = read_int("Enter new width (1-100): ", 1, WIDTH);
+        history[idx].height = read_int("Enter new height (1-100): ", 1, HEIGHT);
         int fill_choice = read_int("Select style (1. Outline, 2. Filled): ", 1, 2);
         history[idx].fill = (fill_choice == 2);
     } else if (history[idx].type == TRIANGLE) {
-        history[idx].x1 = read_int("Enter new x1 (0-49): ", 0, WIDTH - 1);
-        history[idx].y1 = read_int("Enter new y1 (0-19): ", 0, HEIGHT - 1);
-        history[idx].x2 = read_int("Enter new x2 (0-49): ", 0, WIDTH - 1);
-        history[idx].y2 = read_int("Enter new y2 (0-19): ", 0, HEIGHT - 1);
-        history[idx].x3 = read_int("Enter new x3 (0-49): ", 0, WIDTH - 1);
-        history[idx].y3 = read_int("Enter new y3 (0-19): ", 0, HEIGHT - 1);
+        history[idx].x1 = read_int("Enter new x1 (0-99): ", 0, WIDTH - 1);
+        history[idx].y1 = read_int("Enter new y1 (0-99): ", 0, HEIGHT - 1);
+        history[idx].x2 = read_int("Enter new x2 (0-99): ", 0, WIDTH - 1);
+        history[idx].y2 = read_int("Enter new y2 (0-99): ", 0, HEIGHT - 1);
+        history[idx].x3 = read_int("Enter new x3 (0-99): ", 0, WIDTH - 1);
+        history[idx].y3 = read_int("Enter new y3 (0-99): ", 0, HEIGHT - 1);
         int fill_choice = read_int("Select style (1. Outline, 2. Filled): ", 1, 2);
         history[idx].fill = (fill_choice == 2);
     } else if (history[idx].type == CIRCLE) {
-        history[idx].x1 = read_int("Enter new center x (0-49): ", 0, WIDTH - 1);
-        history[idx].y1 = read_int("Enter new center y (0-19): ", 0, HEIGHT - 1);
-        history[idx].radius = read_int("Enter new radius (0-25): ", 0, 25);
+        history[idx].x1 = read_int("Enter new center x (0-99): ", 0, WIDTH - 1);
+        history[idx].y1 = read_int("Enter new center y (0-99): ", 0, HEIGHT - 1);
+        history[idx].radius = read_int("Enter new radius (0-50): ", 0, 50);
         int fill_choice = read_int("Select style (1. Outline, 2. Filled): ", 1, 2);
         history[idx].fill = (fill_choice == 2);
     }
